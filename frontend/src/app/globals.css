@@ -1,0 +1,571 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
+
+/* ==========================================================================
+   RepoShield macOS-Inspired Design System
+   Human Interface Guidelines: Light & Native Dark Appearances (V2)
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Color Palette - Light Mode */
+  --background: #F5F5F7;
+  --foreground: #1D1D1F;
+
+  --sidebar: #EBEBEF;
+  --surface: #FFFFFF;
+  --surface-secondary: #F0F0F2;
+  --surface-tertiary: #E5E5EA;
+  --surface-elevated: #FFFFFF;
+  --surface-hover: #EAEAEF;
+  --surface-active: #E0E0E6;
+
+  --foreground-primary: #1D1D1F;
+  --foreground-secondary: #6E6E73;
+  --foreground-tertiary: #86868B;
+  --foreground-disabled: #A1A1A6;
+
+  --border: #E2E2E7;
+  --border-subtle: #EBEBEF;
+  --border-strong: #D2D2D7;
+
+  --primary: #007AFF;
+  --primary-hover: #0066D6;
+  --primary-active: #0056B3;
+  --primary-subtle: #EAF3FF;
+  --primary-muted: #D0E4FF;
+
+  --success: #248A3D;
+  --success-subtle: #E8F7ED;
+
+  --warning: #B76E00;
+  --warning-subtle: #FFF8E6;
+
+  --danger: #D70015;
+  --danger-subtle: #FDF0F0;
+
+  --info: #007AFF;
+  --info-subtle: #EBF8FF;
+
+  /* Severity Badge Tokens - Bright / Light Mode */
+  --badge-critical-bg: #FDF0F0;
+  --badge-critical-text: #D70015;
+  --badge-critical-border: rgba(215, 0, 21, 0.25);
+
+  --badge-high-bg: #FFF0EE;
+  --badge-high-text: #C93B2B;
+  --badge-high-border: rgba(201, 59, 43, 0.25);
+
+  --badge-medium-bg: #FFF8E6;
+  --badge-medium-text: #B76E00;
+  --badge-medium-border: rgba(183, 110, 0, 0.25);
+
+  --badge-low-bg: #EBF8FF;
+  --badge-low-text: #007AFF;
+  --badge-low-border: rgba(0, 122, 255, 0.25);
+
+  --badge-info-bg: #F2F2F7;
+  --badge-info-text: #6E6E73;
+  --badge-info-border: rgba(110, 110, 115, 0.2);
+
+  --focus-ring: rgba(0, 122, 255, 0.45);
+
+  --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.10);
+  --shadow-dialog: 0 18px 60px rgba(0, 0, 0, 0.16);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Dedicated technical code surface */
+  --surface-code: #F0F0F2;
+
+  /* Motion Tokens */
+  --motion-fast: 140ms;
+  --motion-normal: 200ms;
+  --motion-slow: 280ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Backwards-compatibility aliases */
+  --bg-app: var(--background);
+  --bg-surface: var(--surface);
+  --bg-sidebar: var(--sidebar);
+  --bg-secondary: var(--surface-secondary);
+  --bg-tertiary: var(--surface-tertiary);
+  --bg-hover: var(--surface-hover);
+  --bg-active: var(--surface-active);
+
+  --text-primary: var(--foreground-primary);
+  --text-secondary: var(--foreground-secondary);
+  --text-muted: var(--foreground-tertiary);
+  --text-on-accent: #FFFFFF;
+
+  --border-color: var(--border);
+
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-subtle: var(--primary-subtle);
+
+  --severity-critical: var(--danger);
+  --severity-high: var(--warning);
+  --severity-medium: #F5A623;
+  --severity-low: var(--success);
+  --severity-info: var(--info);
+  --severity-unknown: var(--foreground-tertiary);
+
+  --control-radius: var(--radius-sm);
+  --card-radius: var(--radius-md);
+  --window-radius: var(--radius-lg);
+}
+
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  /* Application foundation: deep macOS charcoal */
+  --background: #1C1C1E;
+  --foreground: #F5F5F7;
+
+  /* macOS-inspired surface hierarchy */
+  --sidebar: #202022;
+  --surface: #252527;
+  --surface-secondary: #2C2C2E;
+  --surface-tertiary: #323235;
+  --surface-elevated: #363639;
+  --surface-hover: #3A3A3D;
+  --surface-active: #414145;
+
+  /* Typography */
+  --foreground-primary: #F5F5F7;
+  --foreground-secondary: #AEAEB2;
+  --foreground-tertiary: #8E8E93;
+  --foreground-disabled: #636366;
+
+  /* Borders and separators */
+  --border: #38383A;
+  --border-subtle: #303033;
+  --border-strong: #48484A;
+
+  /* macOS system-blue family */
+  --primary: #0A84FF;
+  --primary-hover: #409CFF;
+  --primary-active: #0071E3;
+  --primary-subtle: #172F49;
+  --primary-muted: #21466B;
+
+  /* Status colors */
+  --success: #30D158;
+  --success-subtle: #193A29;
+
+  --warning: #FFD60A;
+  --warning-subtle: #403719;
+
+  --danger: #FF453A;
+  --danger-subtle: #451F20;
+
+  --info: #64D2FF;
+  --info-subtle: #193746;
+
+  /* Severity Badge Tokens - macOS Dark Mode V2 */
+  --badge-critical-bg: #451F20;
+  --badge-critical-text: #FF453A;
+  --badge-critical-border: rgba(255, 69, 58, 0.3);
+
+  --badge-high-bg: #452723;
+  --badge-high-text: #FF6961;
+  --badge-high-border: rgba(255, 105, 97, 0.3);
+
+  --badge-medium-bg: #403719;
+  --badge-medium-text: #FFD60A;
+  --badge-medium-border: rgba(255, 214, 10, 0.3);
+
+  --badge-low-bg: #193746;
+  --badge-low-text: #64D2FF;
+  --badge-low-border: rgba(100, 210, 255, 0.3);
+
+  --badge-info-bg: #2C2C2E;
+  --badge-info-text: #AEAEB2;
+  --badge-info-border: rgba(174, 174, 178, 0.25);
+
+  /* Focus */
+  --focus-ring: rgba(10, 132, 255, 0.75);
+
+  /* Elevated surfaces */
+  --shadow-popover: 0 8px 28px rgba(0, 0, 0, 0.28);
+  --shadow-dialog: 0 18px 56px rgba(0, 0, 0, 0.42);
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Dedicated technical code surface */
+  --surface-code: #18181A;
+
+  /* Backwards-compatibility aliases */
+  --bg-app: var(--background);
+  --bg-surface: var(--surface);
+  --bg-sidebar: var(--sidebar);
+  --bg-secondary: var(--surface-secondary);
+  --bg-tertiary: var(--surface-tertiary);
+  --bg-hover: var(--surface-hover);
+  --bg-active: var(--surface-active);
+
+  --text-primary: var(--foreground-primary);
+  --text-secondary: var(--foreground-secondary);
+  --text-muted: var(--foreground-tertiary);
+  --text-on-accent: #FFFFFF;
+
+  --border-color: var(--border);
+
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-subtle: var(--primary-subtle);
+
+  --severity-critical: var(--danger);
+  --severity-high: var(--warning);
+  --severity-medium: var(--warning);
+  --severity-low: var(--success);
+  --severity-info: var(--info);
+  --severity-unknown: var(--foreground-tertiary);
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+  min-height: 100vh;
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard);
+}
+
+/* System Monospace */
+.font-mono, code, pre, .mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-feature-settings: "liga" 0;
+}
+
+/* Accessibility Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* Clean macOS Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 128, 0.28);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 128, 0.45);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Restrained macOS Control Classes */
+.macos-window {
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-dialog);
+}
+
+.macos-panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard);
+}
+
+.macos-panel-secondary {
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.macos-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.macos-title {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--foreground-primary);
+  line-height: 1.25;
+}
+
+.macos-subtitle {
+  font-size: 13px;
+  color: var(--foreground-secondary);
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+.macos-panel-inset {
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.macos-toolbar {
+  height: 56px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.macos-sidebar {
+  width: 228px;
+  background-color: var(--sidebar);
+  border-right: 1px solid var(--border);
+}
+
+/* Dedicated Technical Code Surface */
+.macos-code-block,
+.macos-code-surface {
+  background-color: var(--surface-code);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--foreground-primary);
+  padding: 14px;
+  overflow-x: auto;
+}
+
+/* Diff Line Styling */
+.diff-added {
+  background-color: var(--success-subtle);
+  color: var(--success);
+}
+
+.diff-deleted {
+  background-color: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.diff-unchanged {
+  color: var(--foreground-secondary);
+}
+
+/* Premium Button System */
+.btn-primary,
+.macos-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  background-color: var(--primary);
+  color: #FFFFFF;
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover:not(:disabled),
+.macos-button-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-primary:active:not(:disabled),
+.macos-button-primary:active:not(:disabled) {
+  background-color: var(--primary-active);
+  border-color: var(--primary-active);
+}
+
+.btn-primary:disabled,
+.macos-button-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary,
+.macos-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface-secondary);
+  color: var(--foreground-primary);
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-secondary:hover:not(:disabled),
+.macos-button:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--foreground-primary);
+}
+
+.btn-secondary:active:not(:disabled),
+.macos-button:active:not(:disabled) {
+  background-color: var(--surface-active);
+}
+
+.btn-secondary:disabled,
+.macos-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-destructive,
+.macos-button-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--danger);
+  background-color: var(--danger-subtle);
+  color: var(--danger);
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-destructive:hover:not(:disabled),
+.macos-button-danger:hover:not(:disabled) {
+  background-color: var(--danger);
+  color: #FFFFFF;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--foreground-secondary);
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  color: var(--foreground-primary);
+}
+
+/* Inputs and Selects */
+.macos-input {
+  height: 36px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface-secondary);
+  color: var(--foreground-primary);
+  outline: none;
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard);
+}
+
+/* Explicit padding override rules for inputs containing leading icons */
+.macos-input.pl-7, input.macos-input.pl-7 { padding-left: 1.85rem !important; }
+.macos-input.pl-8, input.macos-input.pl-8 { padding-left: 2.15rem !important; }
+.macos-input.pl-9, input.macos-input.pl-9 { padding-left: 2.45rem !important; }
+.macos-input.pl-10, input.macos-input.pl-10 { padding-left: 2.75rem !important; }
+.macos-input.has-icon, input.macos-input.has-icon { padding-left: 2.45rem !important; }
+
+.macos-input:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.macos-input::placeholder {
+  color: var(--foreground-disabled);
+}
+
+.macos-select {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface-secondary);
+  color: var(--foreground-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard);
+}
+
+.macos-select:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* Page Transition Container (Driven by Framer Motion) */
+.page-transition {
+  width: 100%;
+}

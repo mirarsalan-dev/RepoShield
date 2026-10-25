@@ -1,0 +1,15 @@
+- id: reposhield-secrets
+  name: RepoShield Secret Detection
+  description: Scans staged commits for hardcoded credentials, tokens, and private keys.
+  entry: python -m app.cli secrets .
+  language: python
+  pass_filenames: false
+  always_run: true
+
+- id: reposhield-scan
+  name: RepoShield Security Gate
+  description: Scans project for critical and high vulnerabilities before commit.
+  entry: python -m app.cli scan . --fail-on high
+  language: python
+  pass_filenames: false
+  always_run: true
