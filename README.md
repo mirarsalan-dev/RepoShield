@@ -1,18 +1,32 @@
 # RepoShield — GitHub Repository Security Analyzer
 
-> **"Secure Your Code Before You Deploy."**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/mirarsalan-dev/RepoShield/main/frontend/public/globe.svg" alt="RepoShield Logo" width="80" height="80" />
+</p>
 
-RepoShield is a production-oriented cybersecurity web application that audits authorized GitHub repositories for **exposed secrets**, **vulnerable third-party dependencies**, and **insecure coding patterns**.
+<p align="center">
+  <strong>"Secure Your Code Before You Deploy."</strong><br>
+  Enterprise-grade, zero-database DevSecOps platform for scanning authorized GitHub repositories for exposed secrets, dependency vulnerabilities, supply chain risks, and static code security flaws.
+</p>
+
+<p align="center">
+  <a href="https://github.com/mirarsalan-dev/RepoShield/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+" /></a>
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/next.js-16.4-black.svg" alt="Next.js 16.4" /></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg" alt="FastAPI" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/TailwindCSS-v4-38bdf8.svg" alt="Tailwind CSS" /></a>
+  <img src="https://img.shields.io/badge/Architecture-Zero--Database-success.svg" alt="Zero-Database Architecture" />
+</p>
 
 ---
 
 ## 🔒 Architectural Paradigm: Zero-Database Architecture
 
-RepoShield strictly follows a zero-database design:
-- **No Database Installed or Configured**: No PostgreSQL, MySQL, MongoDB, Firebase, Supabase, SQLite, Redis, or simulated DB services.
-- **Ephemeral In-Memory Processing**: Active scans execute inside temporary worker sandboxes using isolated directories with automatic memory/file destruction upon completion (`SCAN_TTL_SECONDS`).
-- **Browser Local Storage**: Historical scan summaries and pre-redacted findings reside exclusively within client-side browser `localStorage`.
-- **Stateless Server Architecture**: Compatible with serverless, containerized, and horizontal autoscaling environments.
+RepoShield operates under a strict **Zero-Database Design**:
+* **No Database Installed or Configured**: No PostgreSQL, MySQL, MongoDB, Redis, SQLite, Firebase, Supabase, or simulated database services.
+* **Ephemeral In-Memory Processing**: Active scans execute inside temporary worker sandboxes using isolated directories with automatic memory and file destruction upon completion (`SCAN_TTL_SECONDS`).
+* **Browser Local Storage**: Historical audit summaries and pre-redacted findings reside exclusively within client-side browser `localStorage`.
+* **Stateless Server Architecture**: Highly resilient, horizontally scalable, and natively compatible with serverless or containerized cloud platforms.
 
 ---
 
@@ -43,12 +57,15 @@ flowchart TD
         Gitleaks["Gitleaks Engine\n(Secrets & Credential Detection)"]
         OSV["OSV API Integration\n(Dependency Vulnerabilities)"]
         Semgrep["Semgrep Engine\n(Static Application Security)"]
+        ConfigScan["Config & Workflow Inspector\n(CI/CD & Permissions)"]
+        APIScan["API Security Scanner\n(OpenAPI & Endpoints)"]
         Redactor["Deterministic Secret Redactor\n(Strict Masking Filter)"]
     end
 
     subgraph External["External Services"]
         GitHubAPI[GitHub REST API]
         OSV_API[Google OSV Intelligence API]
+        AIAssistant[Gemini / OpenAI API\n(Optional Advisory Assistant)]
     end
 
     UI -- HTTP REST --> Router
@@ -56,106 +73,135 @@ flowchart TD
     Sandbox --> Gitleaks
     Sandbox --> OSV
     Sandbox --> Semgrep
+    Sandbox --> ConfigScan
+    Sandbox --> APIScan
     OSV -- Batch Queries --> OSV_API
     Gitleaks --> Redactor
     Semgrep --> Redactor
+    ConfigScan --> Redactor
+    APIScan --> Redactor
     OSV --> Redactor
     Redactor --> MemoryStore
+    Router -. Advisory Guidance .-> AIAssistant
 ```
 
 ---
 
-## ⚡ Core Features
+## ⚡ Key Modules & Capabilities
 
-1. **Repository Security Scanner**:
-   - Validates public GitHub URLs with strict SSRF defense.
-   - Fetches repository metadata, branch hierarchy, commit references, and language breakdown.
-   - Real-time animated progress stepper and live streaming execution terminal.
+### 1. Multi-Engine Security Scanner
+* **Secret Detection (Gitleaks Engine)**: Scans source files and commit references for API keys, AWS credentials, GitHub tokens, Slack tokens, Stripe keys, and private SSH keys with systematic redaction (`AKIA***REDACTED***`).
+* **Dependency Vulnerability Intelligence (OSV)**: Inspects `package.json`, `package-lock.json`, `requirements.txt`, `Pipfile`, and `poetry.lock`. Queries the Google OSV API in batches for accurate CVEs, GHSA IDs, and CVSS v3 metrics.
+* **Static Application Security Testing (Semgrep SAST)**: AST-driven detection for Command Injection (`shell=True`), SQL Injection, Insecure Deserialization (`pickle`), XSS (`dangerouslySetInnerHTML`), and permissive CORS policies.
+* **API Security & Contract Scanner**: Audits OpenAPI / Swagger specifications and endpoints for missing authentication, unencrypted transmissions, and overly permissive endpoints.
+* **Infrastructure as Code & CI/CD Guardrails**: Audits GitHub Actions workflows for overly permissive `GITHUB_TOKEN` scopes (`write-all`), unpinned third-party actions, and script injections.
+* **Container Security Inspector**: Audits `Dockerfile` configs for root execution, untagged base images, package manager cache retention, and sensitive credential exposure.
 
-2. **Secret Detection (Gitleaks)**:
-   - Integrates native Gitleaks CLI and built-in rules engine.
-   - Detects AWS keys, GitHub personal access tokens, Slack tokens, Stripe live keys, OpenAI credentials, and private RSA/SSH keys.
-   - **Systematic Redaction**: Every matched credential is systematically masked (`AKIA***REDACTED***`). Raw secrets are never stored, returned in APIs, or logged.
+### 2. Interactive Review Workbench & Triage
+* Search, filter, and group findings by severity, category, detector, and status.
+* Live finding triage with status tracking (`OPEN`, `ACKNOWLEDGED`, `IN_REVIEW`, `RESOLVED`, `FALSE_POSITIVE`).
+* Side-by-side vulnerable code snippet viewing with syntax highlighting and line indicators.
 
-3. **Dependency Vulnerability Intelligence (OSV API)**:
-   - Detects and parses `package.json`, `package-lock.json`, `requirements.txt`, `Pipfile`, and `poetry.lock`.
-   - Queries the real Google Open Source Vulnerabilities (OSV) API in batches.
-   - Retrieves real CVE IDs, GHSA IDs, CVSS v3 vectors/scores, affected version ranges, and fixed upgrade targets.
-   - Carefully distinguishes unknown severity from low severity.
+### 3. In-Browser Fix Sandbox & Automated Re-Scan Validation
+* Test code remediation patches directly within an in-browser sandbox.
+* Automatic diff calculation and live re-scan execution to verify whether a patch truly eliminates the vulnerability.
 
-4. **Static Application Security Testing (Semgrep SAST)**:
-   - Analyzes Python, JavaScript, and TypeScript source files.
-   - Detects Command Injection (`shell=True`, `child_process.exec`), SQL Injection (f-string interpolation), Insecure Deserialization (`pickle`, unsafe YAML), Dangerous APIs (`eval`, `dangerouslySetInnerHTML`), and permissive CORS policies.
-   - Zero execution of untrusted repository code.
+### 4. Supply Chain Intelligence & SBOM / OpenVEX
+* Generates industry-standard **CycloneDX 1.5 JSON SBOMs** and **SPDX** software bills of materials.
+* Provides **OpenVEX 0.2.0** justification records (`not_affected`, `vulnerable_code_not_present`, `vulnerable_code_cannot_be_controlled_by_adversary`).
 
-5. **Security Dashboard & Local History**:
-   - Executive Risk Index (0–100) calculated via transparent deterministic weighting.
-   - Interactive severity and category charts powered by Recharts.
-   - Vulnerability trend graphs across previous scans stored in browser `localStorage`.
-   - Clear history and single-scan deletion controls.
+### 5. Exploitability & Reachability Analysis
+* Correlates findings with real-world **EPSS (Exploit Prediction Scoring System)** probabilities and **CISA Known Exploited Vulnerabilities (KEV)** catalog records.
+* Performs call-graph AST reachability analysis to distinguish reachable dependencies from unused imports.
 
-6. **Executive Audit Deliverables**:
-   - Downloadable PDF reports generated on-demand via ReportLab.
-   - Structured CSV exports for SIEM and spreadsheet analysis.
-   - Full JSON datasets for DevSecOps pipeline automation.
+### 6. Attack Path Visualization & Compliance Mapping
+* Visual graph mapping chained attack vectors from external network exposure to privilege escalation.
+* Framework-level compliance checklists mapping findings to **OWASP Top 10 (2021)**, **SOC 2 Type II**, **ISO 27001:2022**, and **PCI-DSS v4.0**.
+
+### 7. AI Security Assistant (Optional & Advisory)
+* Optional integration with **Google Gemini** or **OpenAI** for plain-language vulnerability explanations and patch review.
+* Strictly pre-redacted: snippets are sanitized before submission. Deterministic rule-based guidance is used when no key is provided.
+
+### 8. Executive Deliverables & Export Center
+* **Executive PDF Audit Report**: Generated on-demand via ReportLab with risk scores, breakdowns, and audit timelines.
+* **SARIF 2.1.0 Export**: Full compatibility with GitHub Advanced Security and IDE security extensions.
+* **CSV & JSON**: Structured data exports for SIEMs and security operations dashboards.
+
+### 9. CLI & Pre-Commit Hook Integration
+* Run scans locally using the native CLI:
+  ```bash
+  python -m app.cli scan . --fail-on high
+  python -m app.cli secrets .
+  ```
+* Integrated pre-commit hook support via `.pre-commit-hooks.yaml`.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
+| Component | Technologies |
 |---|---|
-| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS, Recharts, Lucide Icons |
+| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Framer Motion, Recharts, Lucide Icons |
 | **Backend** | Python 3.12, FastAPI, Pydantic v2, Uvicorn, HTTPX, ReportLab |
-| **Security Engines** | Gitleaks (CLI & Engine), Semgrep (CLI & AST rules), Google OSV API |
-| **Storage** | Ephemeral In-Memory Store (`EphemeralMemoryStore`) + Browser `localStorage` (Zero DB) |
-| **Deployment** | Vercel (Frontend), Render / Docker (Backend) |
+| **Security Engines** | Gitleaks Engine, Semgrep Engine, Google OSV API, AST Parsers |
+| **Storage** | Ephemeral RAM (`EphemeralMemoryStore`) + Browser `localStorage` (Zero DB) |
+| **Tooling** | Pre-commit Hooks, Pytest, Pytest-Asyncio, ESLint, Git |
 
 ---
 
-## 🚀 Local Setup Instructions
+## 🚀 Quick Start Guide
 
-### Prerequisites
-- Node.js 18+ and npm
-- Python 3.11+
-- Git
+### Option A: One-Click Development Launcher (Windows PowerShell)
 
-### 1. Backend Setup
+Run the included launcher to automatically verify environments and start both services:
+
+```powershell
+.\run_dev.ps1
+```
+
+* Frontend: `http://localhost:3000`
+* Backend API & Swagger Docs: `http://127.0.0.1:8000/docs`
+
+---
+
+### Option B: Manual Step-by-Step Setup
+
+#### 1. Backend Setup
 
 ```bash
 # Navigate to backend directory
 cd backend
 
-# Create and activate virtual environment
+# Create and activate Python virtual environment
 python -m venv .venv
 
 # Windows:
 .\.venv\Scripts\activate
-# Linux/macOS:
+# macOS/Linux:
 # source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run backend test suite
-pytest tests
+# Run automated test suite
+pytest
 
 # Launch FastAPI development server (runs on port 8000)
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Backend API documentation is available at: `http://localhost:8000/docs`
+API documentation is accessible at `http://localhost:8000/docs`.
 
-### 2. Frontend Setup
+#### 2. Frontend Setup
 
 ```bash
-# In a new terminal, navigate to frontend directory
+# In a separate terminal, navigate to frontend directory
 cd frontend
 
-# Install dependencies
+# Install Node dependencies
 npm install
 
-# Run frontend development server (runs on port 3000)
+# Start Next.js development server (runs on port 3000)
 npm run dev
 ```
 
@@ -165,51 +211,77 @@ Open `http://localhost:3000` in your browser.
 
 ## ⚙️ Environment Variables
 
-### Backend (`backend/.env` or Render environment settings)
+Copy `.env.example` to `.env` to configure optional integrations and overrides:
+
+```bash
+cp .env.example .env
+```
 
 | Variable | Default | Description |
 |---|---|---|
-| `ENVIRONMENT` | `development` | Set to `production` in live deployments |
-| `GITHUB_TOKEN` | `None` | Optional GitHub Personal Access Token to avoid anonymous IP rate limits |
-| `MAX_SCAN_SIZE_MB` | `100` | Maximum allowable uncompressed repository archive size |
-| `MAX_SCAN_TIMEOUT_SECONDS` | `180` | Maximum execution timeout per scan worker |
-| `SCAN_TTL_SECONDS` | `1800` | Ephemeral in-memory scan retention in seconds (30 minutes) |
-
-### Frontend (`frontend/.env.local` or Vercel environment settings)
-
-| Variable | Default | Description |
-|---|---|---|
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | URL of the deployed FastAPI backend API |
+| `ENVIRONMENT` | `development` | Deployment environment (`development` \| `production`) |
+| `GITHUB_TOKEN` | `None` | Optional GitHub Personal Access Token (boosts rate limit from 60/hr to 5,000/hr) |
+| `GEMINI_API_KEY` | `None` | Optional Google Gemini API key for AI Security Assistant |
+| `OPENAI_API_KEY` | `None` | Optional OpenAI API key for AI Security Assistant |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Target URL of the backend FastAPI service |
+| `MAX_SCAN_SIZE_MB` | `100` | Maximum uncompressed repository archive size in megabytes |
+| `MAX_FILE_SIZE_BYTES` | `10485760` | Maximum individual file size limit (10MB default) |
+| `MAX_SCAN_TIMEOUT_SECONDS` | `180` | Maximum scanning execution timeout per worker |
+| `SCAN_TTL_SECONDS` | `1800` | Ephemeral RAM scan retention window in seconds (30 minutes) |
 
 ---
 
-## 🚢 Deployment Instructions
+## ⚓ Pre-Commit Hook Integration
 
-### Deploy Frontend to Vercel
-1. Push this repository to GitHub.
-2. Link the repository to [Vercel](https://vercel.com).
-3. Set **Root Directory** to `frontend`.
-4. Configure environment variable: `NEXT_PUBLIC_API_URL=https://your-backend.onrender.com`.
-5. Deploy.
+Add RepoShield to your repository's `.pre-commit-config.yaml` to block credential leaks and vulnerabilities before commits are made:
 
-### Deploy Backend to Render
-1. Create a **Web Service** on [Render](https://render.com).
-2. Choose **Docker** or **Python** environment.
-   - If using Python runtime:
-     - Root Directory: `backend`
-     - Build Command: `pip install -r requirements.txt`
-     - Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - If using Docker runtime:
-     - Root Directory: `backend`
-     - Dockerfile Path: `Dockerfile`
-3. Add environment variables: `ENVIRONMENT=production`, `GITHUB_TOKEN=(optional)`.
+```yaml
+repos:
+  - repo: https://github.com/mirarsalan-dev/RepoShield
+    rev: main
+    hooks:
+      - id: reposhield-secrets
+      - id: reposhield-scan
+        args: ["--fail-on", "high"]
+```
 
 ---
 
-## 🛡️ Security Posture & Limitations
+## 🛡️ Security Posture & Safeguards
 
-1. **SSRF Defense**: Target hostnames are strictly restricted to `github.com`. Requests to private IPs (`127.0.0.1`, `10.*`, `172.16.*`, `192.168.*`, `169.254.169.254`) and non-GitHub hosts are rejected.
-2. **Zip-Slip & Path Traversal Defense**: All archive extractions verify target member paths against root directory boundaries before writing.
-3. **Redaction Guarantee**: Any detected secret is systematically replaced with masked tokens prior to API serialization or report output.
-4. **Untrusted Code Execution**: Source code is analyzed strictly via static AST and regex matching. Repository code is **never** executed.
-5. **Rate Limits**: Anonymous GitHub API requests are limited to 60/hr. Supplying a read-only token in the Settings page expands this to 5,000/hr.
+1. **SSRF Defense**: Target hostnames are strictly restricted to legitimate `github.com` repositories. Requests targeting localhost, private network ranges (`127.0.0.1`, `10.*`, `172.16.*`, `192.168.*`), cloud metadata endpoints (`169.254.169.254`), or arbitrary hosts are blocked.
+2. **Zip-Slip & Path Traversal Prevention**: Archive extraction validates that every member path resolves strictly within the isolated temporary sandbox boundary.
+3. **Deterministic Secret Redaction**: Detected API tokens and credentials are masked (`ghp_***REDACTED***`) immediately upon discovery. Unredacted secrets are never serialized into API responses or persisted to storage.
+4. **Zero Untrusted Code Execution**: All scanning is performed strictly through static AST parsing, pattern evaluation, and metadata queries. Repository code is **never** executed.
+5. **Rate-Limit Handling**: Unauthenticated GitHub API calls are limited to 60/hr. Supplying a read-only token in `.env` or in Settings expands this to 5,000 requests/hr.
+
+---
+
+## 🚢 Production Deployment
+
+### Frontend (Vercel)
+1. Import repository into [Vercel](https://vercel.com).
+2. Set **Root Directory** to `frontend`.
+3. Configure environment variable: `NEXT_PUBLIC_API_URL=https://your-backend-service.com`.
+4. Deploy.
+
+### Backend (Render / Docker)
+1. Create a new **Web Service** on [Render](https://render.com).
+2. Select repository with **Root Directory** set to `backend`.
+3. Build Command: `pip install -r requirements.txt`.
+4. Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+5. Configure environment variables (`ENVIRONMENT=production`, optional `GITHUB_TOKEN`).
+6. Deploy.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE.md).
+
+---
+
+## 👤 Author
+
+Developed by **[Arsalan Mir](https://github.com/mirarsalan-dev)**.
+Contributions, issues, and feature suggestions are welcome!
