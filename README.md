@@ -34,55 +34,57 @@ RepoShield operates under a strict **Zero-Database Design**:
 
 ```mermaid
 flowchart TD
-    subgraph Client["Frontend (Next.js 16 + Tailwind CSS)"]
-        UI[DevSecOps Web UI]
-        LocalStorage[(Browser localStorage\nSanitized Scan History)]
-        ClientPDF[On-Demand Report Exporters]
-        UI <--> LocalStorage
+    subgraph Client["Frontend - Next.js 16 and Tailwind CSS"]
+        UI["DevSecOps Web UI"]
+        LocalStorage[("Browser localStorage - Sanitized Scan History")]
+        ClientPDF["On-Demand Report Exporters"]
+        UI --> LocalStorage
+        LocalStorage --> UI
         UI --> ClientPDF
     end
 
-    subgraph Backend["Backend API (Python FastAPI - Stateless)"]
-        Router[FastAPI Security Router]
-        MemoryStore[(Ephemeral In-Memory RAM\nTTL: 30 mins)]
-        SSRF[SSRF & URL Security Validator]
-        Sandbox[Temporary Worker Sandbox\nSafe Tarball Extraction]
+    subgraph Backend["Backend API - Python FastAPI Stateless"]
+        Router["FastAPI Security Router"]
+        MemoryStore[("Ephemeral In-Memory RAM - TTL 30 mins")]
+        SSRF["SSRF and URL Security Validator"]
+        Sandbox["Temporary Worker Sandbox - Safe Extraction"]
         
         Router --> SSRF
         SSRF --> Sandbox
-        Router <--> MemoryStore
+        Router --> MemoryStore
+        MemoryStore --> Router
     end
 
     subgraph Scanners["Integrated Security Scanners"]
-        Gitleaks["Gitleaks Engine\n(Secrets & Credential Detection)"]
-        OSV["OSV API Integration\n(Dependency Vulnerabilities)"]
-        Semgrep["Semgrep Engine\n(Static Application Security)"]
-        ConfigScan["Config & Workflow Inspector\n(CI/CD & Permissions)"]
-        APIScan["API Security Scanner\n(OpenAPI & Endpoints)"]
-        Redactor["Deterministic Secret Redactor\n(Strict Masking Filter)"]
+        Gitleaks["Gitleaks Engine - Secrets and Credential Detection"]
+        OSV["OSV API Integration - Dependency Vulnerabilities"]
+        Semgrep["Semgrep Engine - Static Application Security"]
+        ConfigScan["Config and Workflow Inspector - CI/CD"]
+        APIScan["API Security Scanner - OpenAPI and Endpoints"]
+        Redactor["Deterministic Secret Redactor - Strict Masking"]
     end
 
     subgraph External["External Services"]
-        GitHubAPI[GitHub REST API]
-        OSV_API[Google OSV Intelligence API]
-        AIAssistant[Gemini / OpenAI API\n(Optional Advisory Assistant)]
+        GitHubAPI["GitHub REST API"]
+        OSV_API["Google OSV Intelligence API"]
+        AIAssistant["Gemini or OpenAI API - Optional Advisory Assistant"]
     end
 
-    UI -- HTTP REST --> Router
-    Sandbox -- Download Repo --> GitHubAPI
+    UI -->|HTTP REST| Router
+    Sandbox -->|Download Repo| GitHubAPI
     Sandbox --> Gitleaks
     Sandbox --> OSV
     Sandbox --> Semgrep
     Sandbox --> ConfigScan
     Sandbox --> APIScan
-    OSV -- Batch Queries --> OSV_API
+    OSV -->|Batch Queries| OSV_API
     Gitleaks --> Redactor
     Semgrep --> Redactor
     ConfigScan --> Redactor
     APIScan --> Redactor
     OSV --> Redactor
     Redactor --> MemoryStore
-    Router -. Advisory Guidance .-> AIAssistant
+    Router -.->|Advisory Guidance| AIAssistant
 ```
 
 ---
