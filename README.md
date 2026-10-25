@@ -261,19 +261,17 @@ repos:
 
 ## 🚢 Production Deployment
 
-### Frontend (Vercel)
-1. Import repository into [Vercel](https://vercel.com).
-2. Set **Root Directory** to `frontend`.
-3. Configure environment variable: `NEXT_PUBLIC_API_URL=https://your-backend-service.com`.
-4. Deploy.
+RepoShield is deployed on **Vercel** as a full-stack cloud service:
 
-### Backend (Render / Docker)
-1. Create a new **Web Service** on [Render](https://render.com).
-2. Select repository with **Root Directory** set to `backend`.
-3. Build Command: `pip install -r requirements.txt`.
-4. Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-5. Configure environment variables (`ENVIRONMENT=production`, optional `GITHUB_TOKEN`).
-6. Deploy.
+* **Live Web Application**: [https://reposhield-web.vercel.app](https://reposhield-web.vercel.app)
+* **Live API Backend**: [https://reposhield-api.vercel.app](https://reposhield-api.vercel.app)
+* **API Documentation**: [https://reposhield-api.vercel.app/docs](https://reposhield-api.vercel.app/docs)
+* **API Health Check**: [https://reposhield-api.vercel.app/api/health](https://reposhield-api.vercel.app/api/health)
+
+### Deployment Architecture on Vercel
+* **Frontend**: Next.js 16 (App Router + Turbopack) deployed on Vercel Edge/Serverless platform with automatic static asset optimization.
+* **Backend**: FastAPI Python 3.12 Serverless API deployed on Vercel with Mangum ASGI adapter and automated CORS handling.
+
 
 ---
 

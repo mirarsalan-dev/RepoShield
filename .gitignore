@@ -136,3 +136,6 @@ scratch_*
 *scratch*
 tmp/
 temp/
+
+.vercel
+.env*

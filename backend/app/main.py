@@ -29,6 +29,13 @@ app.include_router(assistant.router)
 app.include_router(fix_validation.router)
 app.include_router(website_security.router)
 
+# Serverless ASGI / Lambda handler adapter for Vercel
+try:
+    from mangum import Mangum
+    handler = Mangum(app)
+except Exception:
+    handler = app
+
 @app.get("/")
 async def root():
     return {
